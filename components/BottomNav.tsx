@@ -50,7 +50,7 @@ function BottomNav() {
   });
 
   return (
-    <div className="sticky bottom-0 w-full">
+    <div className="fixed bottom-0 w-full">
       <nav className=" w-full bg-card border border-input py-3">
         <div className="flex w-full justify-around">
           <Link
