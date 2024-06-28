@@ -1,6 +1,5 @@
 import FeedCard from "@/components/FeedCard";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+
 
 const FEED_ITEMS = [
   {
@@ -8,24 +7,28 @@ const FEED_ITEMS = [
     username: "shahank",
     descripton: "i planted a tree and i feel like i saved the world",
     picUrl: "/tree.jpg",
+    avatarUrl: "/avatar.jpg",
   },
   {
     id: 1,
     username: "shahank2",
     descripton: "i planted a tree and i feel like i saved the world",
     picUrl: "/tree.jpg",
+    avatarUrl: "/avatar.jpg",
   },
   {
     id: 2,
     username: "shahank2",
     descripton: "i planted a tree and i feel like i saved the world",
     picUrl: "/tree.jpg",
+    avatarUrl: "/avatar.jpg",
   },
   {
     id: 3,
     username: "shahank2",
     descripton: "i planted a tree and i feel like i saved the world",
     picUrl: "/tree.jpg",
+    avatarUrl: "/avatar.jpg",
   },
 ];
 
