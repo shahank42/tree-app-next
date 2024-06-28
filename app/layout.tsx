@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+import BottomNav from "@/components/BottomNav";
+import { ThirdwebProvider } from "thirdweb/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +19,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body
+        className={cn(
+          "relative font-sans antialiased h-full max-w-xl mx-auto",
+          inter.className
+        )}
+      >
+        <main className="relative flex flex-col">
+          <div className="flex-grow flex-1">
+            <ThirdwebProvider>{children}</ThirdwebProvider>
+          </div>
+        </main>
+        <BottomNav />
+      </body>
     </html>
   );
 }
