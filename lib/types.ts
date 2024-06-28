@@ -4,10 +4,3 @@ export interface FeedItem {
   descripton: string;
   picUrl: string;
 }
-
-export interface User {
-  id: string;
-  name: string;
-  bio: string;
-  walletAddress: string;
-}
