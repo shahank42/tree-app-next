@@ -38,21 +38,26 @@ const NAV_ITEMS = [
 
 function BottomNav() {
   return (
-    <nav className="sticky bottom-0 w-full bg-card border-t">
-      <div className="flex w-full justify-around">
-        {NAV_ITEMS.map((item) => (
-          <Link
-            href={item.link}
-            className={
-              (buttonVariants({ variant: "secondary" }),
-              cn(navigationMenuTriggerStyle(), "flex gap-2 size-14"))
-            }
-          >
-            {item.Icon}
-          </Link>
-        ))}
-      </div>
-    </nav>
+    <div className="sticky bottom-0 w-full">
+      <nav className=" w-full bg-card border border-input py-3">
+        <div className="flex w-full justify-around">
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.name}
+              href={item.link}
+              className={cn(
+                buttonVariants({
+                  variant: item.name === "Upload" ? "default" : "outline",
+                }),
+                "flex gap-2 size-[3.2rem] rounded-full"
+              )}
+            >
+              {item.Icon}
+            </Link>
+          ))}
+        </div>
+      </nav>
+    </div>
   );
 }
 
