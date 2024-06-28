@@ -4,4 +4,5 @@ export interface FeedItem {
   descripton: string;
   picUrl: string;
   avatarUrl: string;
+  date: string;
 }

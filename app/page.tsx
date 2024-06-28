@@ -8,6 +8,7 @@ const FEED_ITEMS = [
     descripton: "i planted a tree and i feel like i saved the world",
     picUrl: "/tree.jpg",
     avatarUrl: "/avatar.jpg",
+    date: "09/11/2001",
   },
   {
     id: 1,
@@ -15,6 +16,8 @@ const FEED_ITEMS = [
     descripton: "i planted a tree and i feel like i saved the world",
     picUrl: "/tree.jpg",
     avatarUrl: "/avatar.jpg",
+    date: "09/11/2001",
+
   },
   {
     id: 2,
@@ -22,6 +25,8 @@ const FEED_ITEMS = [
     descripton: "i planted a tree and i feel like i saved the world",
     picUrl: "/tree.jpg",
     avatarUrl: "/avatar.jpg",
+    date: "09/11/2001",
+
   },
   {
     id: 3,
@@ -29,6 +34,8 @@ const FEED_ITEMS = [
     descripton: "i planted a tree and i feel like i saved the world",
     picUrl: "/tree.jpg",
     avatarUrl: "/avatar.jpg",
+    date: "09/11/2001",
+
   },
 ];
 
