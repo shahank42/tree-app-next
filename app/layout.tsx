@@ -26,7 +26,7 @@ export default function RootLayout({
         )}
       >
         <main className="relative flex flex-col">
-          <div className="flex-grow flex-1">
+          <div className="flex-grow flex-1 pb-[76.8px]">
             <ThirdwebProvider>{children}</ThirdwebProvider>
           </div>
         </main>
