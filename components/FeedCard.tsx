@@ -7,7 +7,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 function FeedCard({ data }: { data: FeedItem }) {
   return (
     <Card>
-     
       <CardHeader className="flex flex-col gap-5">
         <div className="relative w-full h-32">
           <Image
@@ -19,12 +18,20 @@ function FeedCard({ data }: { data: FeedItem }) {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <div className="flex">
-        <Avatar>
-        <AvatarImage  src={data.avatarUrl} className="rounded-full h-10 w-10"/>
-        <AvatarFallback>{data.username}</AvatarFallback>
-        </Avatar>
-          <CardTitle className="pt-2">{data.username}</CardTitle>
+          <div className="flex justify-between">
+            <div className="flex">
+              <Avatar>
+                <AvatarImage
+                  src={data.avatarUrl}
+                  className="rounded-full h-10 w-10"
+                />
+                <AvatarFallback>{data.username}</AvatarFallback>
+              </Avatar>
+              <CardTitle className="pt-2">{data.username}</CardTitle>
+            </div>
+            <CardDescription className="pt-2.5 pl-10">
+              {data.date}
+            </CardDescription>
           </div>
           <CardDescription>{data.descripton}</CardDescription>
         </div>
