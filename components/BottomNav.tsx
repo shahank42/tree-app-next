@@ -21,6 +21,7 @@ import { Button, buttonVariants } from "./ui/button";
 import { ConnectButton } from "thirdweb/react";
 import { client } from "@/lib/thirdWebClient";
 import { isLoggedIn } from "@/lib/actions/auth";
+import { useUserStore } from "@/lib/stores/user";
 
 const NAV_ITEMS = [
   {
@@ -42,6 +43,11 @@ const NAV_ITEMS = [
 
 function BottomNav() {
   const [loggedIn, setLoggedIn] = useState(false);
+
+  const user = useUserStore((state) => state.user);
+
+  console.log("useris", user)
+
 
   useEffect(() => {
     (async () => {
@@ -79,7 +85,7 @@ function BottomNav() {
 
           {loggedIn ? (
             <Link
-              href="/account"
+              href={`/user/${user.name}`}
               className={cn(
                 buttonVariants({
                   variant: "outline",

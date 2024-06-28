@@ -6,10 +6,13 @@ import { pb } from "@/lib/pbClient";
 import { useRouter } from "next/navigation";
 import { RecordModel } from "pocketbase";
 import { convertToUser } from "@/lib/utils";
+import { useUserStore } from "@/lib/stores/user";
 
 function Onboarding({ walletAddress }: { walletAddress: string }) {
   const router = useRouter();
   const [userPresent, setUserPresent] = useState(true);
+
+  const updateUser = useUserStore((state) => state.updateUser);
 
   useEffect(() => {
     (async () => {
@@ -19,6 +22,15 @@ function Onboarding({ walletAddress }: { walletAddress: string }) {
           .getFirstListItem(`wallet_address="${walletAddress}"`);
 
         console.log(result);
+
+        const user = {
+          name: result.name,
+          bio: result.bio,
+          id: result.id,
+          walletAddress: result.wallet_address,
+        };
+
+        updateUser(user);
 
         setUserPresent(true);
         router.push(`/user/${result.name}`);

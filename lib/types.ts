@@ -6,3 +6,10 @@ export interface FeedItem {
   avatarUrl: string;
   date: string;
 }
+
+export interface UserType {
+  id: string;
+  name: string;
+  bio: string;
+  walletAddress: string;
+}
