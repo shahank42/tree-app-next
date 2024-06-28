@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   NavigationMenu,
   NavigationMenuLink,
@@ -12,17 +12,21 @@ import {
   CircleUserIcon,
   Home,
   HomeIcon,
+  LogInIcon,
   Upload,
   UploadIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "./ui/button";
+import { ConnectButton } from "thirdweb/react";
+import { client } from "@/lib/thirdWebClient";
+import { isLoggedIn } from "@/lib/actions/auth";
 
 const NAV_ITEMS = [
   {
     name: "Home",
     Icon: <HomeIcon />,
-    link: "#",
+    link: "/",
   },
   {
     name: "Upload",
@@ -31,30 +35,73 @@ const NAV_ITEMS = [
   },
   {
     name: "My Account",
-    Icon: <CircleUserIcon />,
-    link: "#",
+    Icon: <LogInIcon />,
+    link: "/login",
   },
 ];
 
 function BottomNav() {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setLoggedIn(await isLoggedIn());
+    })();
+  });
+
   return (
     <div className="sticky bottom-0 w-full">
       <nav className=" w-full bg-card border border-input py-3">
         <div className="flex w-full justify-around">
-          {NAV_ITEMS.map((item) => (
+          <Link
+            href="/"
+            className={cn(
+              buttonVariants({
+                variant: "outline",
+              }),
+              "flex gap-2 size-[3.2rem] rounded-full"
+            )}
+          >
+            <HomeIcon />
+          </Link>
+
+          <Link
+            href="/upload"
+            className={cn(
+              buttonVariants({
+                variant: "default",
+              }),
+              "flex gap-2 size-[3.2rem] rounded-full"
+            )}
+          >
+            <UploadIcon />
+          </Link>
+
+          {loggedIn ? (
             <Link
-              key={item.name}
-              href={item.link}
+              href="/account"
               className={cn(
                 buttonVariants({
-                  variant: item.name === "Upload" ? "default" : "outline",
+                  variant: "outline",
                 }),
                 "flex gap-2 size-[3.2rem] rounded-full"
               )}
             >
-              {item.Icon}
+              <CircleUserIcon />
             </Link>
-          ))}
+          ) : (
+            <Link
+              href="/login"
+              className={cn(
+                buttonVariants({
+                  variant: "outline",
+                }),
+                "flex gap-2 size-[3.2rem] rounded-full"
+              )}
+            >
+              <LogInIcon />
+            </Link>
+          )}
         </div>
       </nav>
     </div>
