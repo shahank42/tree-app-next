@@ -20,7 +20,7 @@ export default function Home() {
         feedItem.username = data.username;
         feedItem.description = data.description;
         feedItem.user_id = data.user_id;
-        feedItem.picUrl = `${process.env.NEXT_PUBLIC_PB_URL}/api/files/posts/${data.id}/${data.picUrl}`; // TODO
+        feedItem.picUrl = `${process.env.NEXT_PUBLIC_PB_URL}/api/files/posts/${data.id}/${data.picUrl}`; 
         feedItem.avatarUrl = "/avatar.jpg";
         feedItem.location = data.location;
         feedItem.date = data.created;
