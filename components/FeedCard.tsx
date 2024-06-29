@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button"
 import { Info } from 'lucide-react';
-
+import { ChevronUp } from 'lucide-react';
 
 
 
