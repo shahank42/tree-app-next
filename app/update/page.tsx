@@ -23,14 +23,33 @@ import { useUserStore } from "@/lib/stores/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { RecordModel } from "pocketbase";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import Webcam from "react-webcam";
 
 const formSchema = z.object({
-  nameId: z.string(),
-  file: z.instanceof(FileList),
+  nameId: z.string().nonempty("Please select a tree"),
+  file: z.instanceof(FileList).optional(),
 });
+
+const dataURLToBlob = (dataURL: string): Blob => {
+  const arr = dataURL.split(",");
+  const mime = arr[0].match(/:(.*?);/)?.[1] || "";
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
+};
+
+const videoConstraints = {
+  width: 720,
+  height: 360,
+  facingMode: "user",
+};
 
 function Page() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -38,23 +57,40 @@ function Page() {
   });
 
   const user = useUserStore((state) => state.user);
-
-  const [preview, setPreview] = useState("/tree.jpg");
+  const [isCaptureEnabled, setCaptureEnabled] = useState<boolean>(false);
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
+  const webcamRef = useRef<Webcam>(null);
+  const [url, setUrl] = useState<string>("/tree.jpg");
   const [selectedFile, setSelectedFile] = useState<Blob>();
   const [userTrees, setUserTrees] = useState<RecordModel[]>();
 
-  const fileRef = form.register("file");
+  const capture = useCallback(() => {
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (imageSrc) {
+      setUrl(imageSrc);
+      const imageBlob = dataURLToBlob(imageSrc);
+      setSelectedFile(imageBlob);
+    }
+  }, []);
+
+  const toggleCamera = () => {
+    setFacingMode((prevMode) => (prevMode === "user" ? "environment" : "user"));
+  };
+
+  const startCaptureWithLocation = () => {
+    setCaptureEnabled(true);
+  };
 
   useEffect(() => {
-    (async () => {
+    const fetchData = async () => {
       console.log(user.id);
       const retrievedData = await pb.collection("trees").getFullList({
         filter: `user_id="${user.id}"`,
       });
-
       setUserTrees(retrievedData);
-    })();
-  }, []);
+    };
+    fetchData();
+  }, [user.id]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     console.log(data);
@@ -62,9 +98,7 @@ function Page() {
       const formData = new FormData();
       formData.append("picUrl", selectedFile);
       formData.append("tree_id", data.nameId);
-      const createdRecordTreeImages = await pb
-        .collection("tree_images")
-        .create(formData);
+      await pb.collection("tree_images").create(formData);
     }
   };
 
@@ -73,10 +107,10 @@ function Page() {
       <div className="flex flex-col items-center w-full gap-2 px-4 pt-10">
         <div className="relative size-64">
           <Image
-            src={preview}
-            alt="its a pic"
+            src={url}
+            alt="Captured image"
             fill
-            objectFit="cover"
+            style={{ objectFit: "cover" }}
             className="rounded-lg"
           />
         </div>
@@ -86,36 +120,38 @@ function Page() {
             className="w-full p-10 flex flex-col gap-10"
           >
             <div className="flex flex-col gap-5 w-full">
-              <FormField
-                control={form.control}
-                name="file"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Upload Picture</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="file"
-                          {...fileRef}
-                          onChange={(e) => {
-                            if (e.target.files) {
-                              const previewUrl = URL.createObjectURL(
-                                e.target.files[0]
-                              );
-                              setSelectedFile(e.target.files[0]);
-                              setPreview(previewUrl);
-                            }
-                          }}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Share the picture of your awesome tree!
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+              {/* Capture Picture Section */}
+              <div>
+                <FormLabel>Capture Picture</FormLabel>
+                {isCaptureEnabled ? (
+                  <>
+                    <div className="mb-2">
+                      <Button onClick={() => setCaptureEnabled(false)}>
+                        End
+                      </Button>
+                    </div>
+                    <div className="mb-2">
+                      <Webcam
+                        audio={false}
+                        ref={webcamRef}
+                        screenshotFormat="image/jpeg"
+                        videoConstraints={{ ...videoConstraints, facingMode }}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={capture}>Capture</Button>
+                      <Button onClick={toggleCamera}>Switch Camera</Button>
+                    </div>
+                  </>
+                ) : (
+                  <Button
+                    onClick={startCaptureWithLocation}
+                    className="mx-2 text-xs"
+                  >
+                    Start
+                  </Button>
+                )}
+              </div>
 
               <FormField
                 control={form.control}
@@ -153,4 +189,5 @@ function Page() {
     </div>
   );
 }
+
 export default Page;
