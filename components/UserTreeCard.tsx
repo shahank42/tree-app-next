@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { UserTreeItem } from "@/lib/types";
 import { pb } from "@/lib/pbClient";
