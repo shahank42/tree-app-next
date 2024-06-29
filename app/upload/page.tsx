@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -16,22 +16,18 @@ import { pb } from "@/lib/pbClient";
 import { useUserStore } from "@/lib/stores/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import Link from "next/link";
 import { useState, useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Webcam from "react-webcam";
 import {
-  TransactionButton,
   useActiveAccount,
-  useAutoConnect,
+  useAutoConnect
 } from "thirdweb/react";
-import { safeMint } from "@/thirdweb/43113/0xc4c88000b368332e1977e5d7a20a1f234f0a0ab6";
-import { randomUUID } from "crypto";
+import { safeMint } from "@/thirdweb/43113/0xdcEE2dD10dD46086cc1D2B0825A11fFC990e6Eff";
 import { nftreeContract } from "@/lib/web3";
 import { client } from "@/lib/thirdWebClient";
 import { Wallet, createWallet, inAppWallet } from "thirdweb/wallets";
-import { wallets } from "@/lib/actions/auth";
 import { sendAndConfirmTransaction } from "thirdweb";
 
 // Utility function to convert data URL to Blob
