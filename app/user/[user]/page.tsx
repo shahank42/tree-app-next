@@ -18,6 +18,8 @@ import { FeedItem, UserTreeItem, UserType } from "@/lib/types";
 import { useUserStore } from "@/lib/stores/user";
 import UserTreeCard from "@/components/UserTreeCard";
 import { RecordModel } from "pocketbase";
+import { showBalance } from "@/lib/web3";
+import DisplayCarbonBalance from "@/components/DisplayBalance";
 
 export default async function page({ params }: { params: { user: string } }) {
   try {
@@ -31,6 +33,9 @@ export default async function page({ params }: { params: { user: string } }) {
       id: result.id,
       walletAddress: result.wallet_address,
     };
+
+    const numTrees = await showBalance("nftree", user.walletAddress);
+    const carbonCredits = await showBalance("nftree", user.walletAddress);
 
     const retrievedData = await pb.collection("trees").getFullList({
       filter: `user_id="${user?.id}"`,
@@ -67,17 +72,17 @@ export default async function page({ params }: { params: { user: string } }) {
               </div>
               <div className="flex justify-evenly items-center text-muted-foreground w-100">
                 <div className="flex flex-col justify-center items-center">
-                  <div className="flex">
+                  <div className="flex gap-2">
+                    {`${numTrees}`}
                     <Trees className="h-5 w-5" />
-                    250
                   </div>
                   <span className="text-sm">trees planted</span>
                 </div>
                 <Separator orientation="vertical" className="h-12" />
                 <div className="flex flex-col justify-center items-center">
-                  <div className="flex">
+                  <div className="flex gap-2">
+                    {`${carbonCredits}`}
                     <Trees className="h-5 w-5" />
-                    1000
                   </div>
                   <span className="text-sm">carbon credit</span>
                 </div>

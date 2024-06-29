@@ -114,7 +114,7 @@ function Page() {
 
       // console.log(Array.from(formData));
 
-      const createdRecordPosts = await pb.collection("posts").create(formData);
+      // const createdRecordPosts = await pb.collection("posts").create(formData);
       const createdRecordTrees = await pb.collection("trees").create({
         location: `${latitude}, ${longitude}`, // Using the captured location
         user_id: user.id,
