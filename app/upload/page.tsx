@@ -24,7 +24,7 @@ import {
   useActiveAccount,
   useAutoConnect
 } from "thirdweb/react";
-import { safeMint } from "@/thirdweb/43113/0xdcEE2dD10dD46086cc1D2B0825A11fFC990e6Eff";
+import { safeMint } from "@/thirdweb/43113/0xdcee2dd10dd46086cc1d2b0825a11ffc990e6eff";
 import { nftreeContract } from "@/lib/web3";
 import { client } from "@/lib/thirdWebClient";
 import { Wallet, createWallet, inAppWallet } from "thirdweb/wallets";

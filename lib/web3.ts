@@ -2,7 +2,7 @@ import { avalancheFuji } from 'thirdweb/chains';
 import { createThirdwebClient, getContract } from "thirdweb";
 import { client } from "./thirdWebClient";
 import { getWalletAddressCookie } from "./actions/auth";
-import { balanceOf as nftreeBalance } from "@/thirdweb/43113/0xdcEE2dD10dD46086cc1D2B0825A11fFC990e6Eff";
+import { balanceOf as nftreeBalance } from "@/thirdweb/43113/0xdcee2dd10dd46086cc1d2b0825a11ffc990e6eff";
 import { balanceOf as carbonCreditBalance } from "@/thirdweb/43113/0xcd109d51c3afd7ed5abc9b8d4254624b82798337";
 
 export const carbonCreditContract = getContract({
