@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button"
 import { Info } from 'lucide-react';
-
+import { ChevronUp } from 'lucide-react';
 
 
 
@@ -45,6 +45,8 @@ function FeedCard({ data }: { data: FeedItem }) {
 
             <DialogContent>
               <DialogHeader>
+                
+                <DialogTitle className="pt-2">
                 <div className="relative w-full h-54">
                   <Image
                     src={data.picUrl}
@@ -54,7 +56,6 @@ function FeedCard({ data }: { data: FeedItem }) {
                     className="rounded-lg"
                   />
                 </div>
-                <DialogTitle className="pt-2">
                   @{data.username} planted a tree at {data.location} on{" "}
                   {data.date}
                   <div className="flex justify-between">
