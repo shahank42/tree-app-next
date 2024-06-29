@@ -21,6 +21,18 @@ import { useState, useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Webcam from "react-webcam";
+import {
+  TransactionButton,
+  useActiveAccount,
+  useAutoConnect,
+} from "thirdweb/react";
+import { safeMint } from "@/thirdweb/43113/0xc4c88000b368332e1977e5d7a20a1f234f0a0ab6";
+import { randomUUID } from "crypto";
+import { nftreeContract } from "@/lib/web3";
+import { client } from "@/lib/thirdWebClient";
+import { Wallet, createWallet, inAppWallet } from "thirdweb/wallets";
+import { wallets } from "@/lib/actions/auth";
+import { sendAndConfirmTransaction } from "thirdweb";
 
 // Utility function to convert data URL to Blob
 const dataURLToBlob = (dataURL: string): Blob => {
@@ -49,6 +61,9 @@ const videoConstraints = {
   height: 360,
   facingMode: "user", // Initial facing mode is the front camera
 };
+
+const treeUUID = crypto.randomUUID();
+let wallet: Wallet;
 
 function Page() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -102,16 +117,35 @@ function Page() {
 
   const user = useUserStore((state) => state.user);
 
+  const { data: autoConnected, isLoading } = useAutoConnect({
+    client: client,
+    onConnect: (w: Wallet) => {
+      wallet = w;
+    },
+    wallets: [
+      inAppWallet(),
+      createWallet("app.core"),
+      createWallet("io.metamask"),
+    ],
+  });
+
+  const activeAccount = useActiveAccount();
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     if (selectedFile) {
-      const formData = new FormData();
-      formData.append("picUrl", selectedFile);
-      formData.append("user_id", user.id);
-      formData.append("username", user.name);
-      formData.append("description", data.description);
-      formData.append("location", `${latitude}, ${longitude}`); // Using the captured location
-
       // console.log(Array.from(formData));
+      if (!activeAccount) throw "Account not active";
+
+      const reciept = await sendAndConfirmTransaction({
+        transaction: safeMint({
+          to: user.walletAddress,
+          uri: `${process.env.NEXT_PUBLIC_BASE_URL}/trees/${treeUUID}`,
+          contract: nftreeContract,
+        }),
+        account: activeAccount,
+      });
+
+      console.log(reciept);
 
       // const createdRecordPosts = await pb.collection("posts").create(formData);
       const createdRecordTrees = await pb.collection("trees").create({
@@ -119,6 +153,7 @@ function Page() {
         user_id: user.id,
         type: data.type,
         name: data.name,
+        tree_uuid: treeUUID,
       });
 
       const newFormData = new FormData();
@@ -160,7 +195,12 @@ function Page() {
                 {isCaptureEnabled ? (
                   <>
                     <div className="mb-2">
-                      <Button onClick={() => setCaptureEnabled(false)}>
+                      <Button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCaptureEnabled(false);
+                        }}
+                      >
                         End
                       </Button>
                     </div>
@@ -173,8 +213,22 @@ function Page() {
                       />
                     </div>
                     <div className="flex gap-2">
-                      <Button onClick={capture}>Capture</Button>
-                      <Button onClick={toggleCamera}>Switch Camera</Button>
+                      <Button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          capture();
+                        }}
+                      >
+                        Capture
+                      </Button>
+                      <Button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          toggleCamera();
+                        }}
+                      >
+                        Switch Camera
+                      </Button>
                     </div>
                   </>
                 ) : (
@@ -239,16 +293,25 @@ function Page() {
               />
             </div>
 
-            <div className="flex flex-col w-full">
-              <Button type="submit">Submit new tree</Button>
-              <span className="w-full flex justify-center">OR</span>
-              <Link
-                href="/update"
-                className={buttonVariants({ variant: "outline" })}
-              >
-                Update your existing tree
-              </Link>
-            </div>
+            <Button type="submit">Submit new tree</Button>
+            {/* <TransactionButton
+              transaction={() =>
+                safeMint({
+                  to: user.walletAddress,
+                  uri: `${process.env.NEXT_PUBLIC_BASE_URL}/trees/${treeUUID}`,
+                  contract: nftreeContract,
+                })
+              }
+              onTransactionConfirmed={() => {
+                form.handleSubmit(onSubmit);
+              }}
+              onError={(e) => {
+                alert(e);
+              }}
+              disabled={false}
+            >
+              Confirm Transaction
+            </TransactionButton> */}
           </form>
         </Form>
       </div>

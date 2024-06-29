@@ -6,6 +6,7 @@ import { pb } from "@/lib/pbClient";
 import { UserTreeItem, UserType } from "@/lib/types";
 import UserTreeCard from "@/components/UserTreeCard";
 import { showBalance } from "@/lib/web3";
+import { Wallet } from "thirdweb/wallets";
 
 export default async function page({ params }: { params: { user: string } }) {
   try {

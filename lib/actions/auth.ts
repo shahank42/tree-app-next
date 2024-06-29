@@ -1,7 +1,7 @@
 "use server";
 import { client } from "@/lib/thirdWebClient";
 import { VerifyLoginPayloadParams, createAuth } from "thirdweb/auth";
-import { privateKeyToAccount } from "thirdweb/wallets";
+import { createWallet, inAppWallet, privateKeyToAccount } from "thirdweb/wallets";
 import { cookies } from "next/headers";
 
 const privateKey = process.env.THIRDWEB_ADMIN_PRIVATE_KEY || "";
@@ -51,3 +51,4 @@ export async function isLoggedIn() {
 export async function logout() {
   cookies().delete("jwt");
 }
+

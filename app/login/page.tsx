@@ -14,6 +14,7 @@ import { client } from "@/lib/thirdWebClient";
 import { cookies } from "next/headers";
 import React, { useEffect, useState } from "react";
 import { ConnectButton } from "thirdweb/react";
+import { Wallet } from "thirdweb/wallets";
 
 function Login() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -44,6 +45,10 @@ function Login() {
             <span className="">Log In to NFTree</span>
             <ConnectButton
               client={client}
+              // onConnect={(wallet: Wallet) => {
+
+              // }}
+              // wallets={wallets}
               auth={{
                 isLoggedIn: async (address) => {
                   console.log("checking if logged in!", { address });
