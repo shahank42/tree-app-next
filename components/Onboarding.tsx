@@ -4,8 +4,6 @@ import React, { useEffect, useState } from "react";
 import OnboardingForm from "./OnboardingForm";
 import { pb } from "@/lib/pbClient";
 import { useRouter } from "next/navigation";
-import { RecordModel } from "pocketbase";
-import { convertToUser } from "@/lib/utils";
 import { useUserStore } from "@/lib/stores/user";
 
 function Onboarding({ walletAddress }: { walletAddress: string }) {

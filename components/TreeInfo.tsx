@@ -61,7 +61,7 @@ export default function TreeInfo({ data }: { data: FeedItem }) {
     <div className="px-2">
       <div className="flex flex-col gap-3 justify-around py-3">
         {posts.map((item) => (
-          <Dialog>
+          <Dialog key={item.id}>
             <DialogTrigger  asChild>
               {/* <FeedCard key={item.id} data={item}></FeedCard> */}
               <Button variant="outline">Edit Profile</Button>
