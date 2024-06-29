@@ -58,7 +58,7 @@ export default async function page({ params }: { params: { user: string } }) {
             <CardHeader className="bg-muted/20 p-6">
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16">
-                  <AvatarImage src="/placeholder-user.jpg" />
+                  <AvatarImage src="/avatar.jpg" />
                   <AvatarFallback>AF</AvatarFallback>
                 </Avatar>
                 <div className="grid gap-1">
