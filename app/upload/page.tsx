@@ -59,7 +59,7 @@ function Page() {
 
   return (
     <div className="w-full flex justify-center items-center">
-      <div className="flex flex-col items-center w-full gap-2 px-4">
+      <div className="flex flex-col items-center w-full gap-2 px-4 pt-10">
         <div className="relative size-64">
           <Image
             src={preview}

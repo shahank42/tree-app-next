@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -13,56 +14,56 @@ import { Trees } from "lucide-react";
 import { Award } from "lucide-react";
 import Image from "next/image";
 import FeedCard from "@/components/FeedCard";
-
-const FEED_ITEMS = [
-  {
-    id: 0,
-    username: "shahank",
-    descripton: "i planted a tree and i feel like i saved the world",
-    picUrl: "/tree.jpg",
-    avatarUrl: "/avatar.jpg",
-    date: "09/11/2001",
-  },
-  {
-    id: 1,
-    username: "shahank2",
-    descripton: "i planted a tree and i feel like i saved the world",
-    picUrl: "/tree.jpg",
-    avatarUrl: "/avatar.jpg",
-    date: "09/11/2001",
-  },
-  {
-    id: 2,
-    username: "shahank2",
-    descripton: "i planted a tree and i feel like i saved the world",
-    picUrl: "/tree.jpg",
-    avatarUrl: "/avatar.jpg",
-    date: "09/11/2001",
-  },
-  {
-    id: 3,
-    username: "shahank2",
-    descripton: "i planted a tree and i feel like i saved the world",
-    picUrl: "/tree.jpg",
-    avatarUrl: "/avatar.jpg",
-    date: "09/11/2001",
-  },
-];
+import { pb } from "@/lib/pbClient";
+import { FeedItem } from "@/lib/types";
+import { useUserStore } from "@/lib/stores/user";
 
 export default function page({ params }: { params: { user: string } }) {
+  const [posts, setPosts] = useState<FeedItem[]>([]);
+
+  const [loggedIn, setLoggedIn] = useState(false);
+  const user = useUserStore((state) => state.user);
+  // const posts = await pb.collection("posts").getFullList();
+
+  useEffect(() => {
+    (async () => {
+      const retrievedData = await pb.collection("posts").getFullList({
+        filter: `username="${params.user}"`
+      });
+      // const retrievedData = await pb.collection("posts").getFullList();
+      console.log(retrievedData);
+
+      const posts: FeedItem[] = [];
+      for (const data of retrievedData) {
+        const feedItem: FeedItem = {} as FeedItem;
+        feedItem.id = data.id;
+        feedItem.username = data.username;
+        feedItem.description = data.description;
+        feedItem.user_id = data.user_id;
+        feedItem.picUrl = `${process.env.NEXT_PUBLIC_PB_URL}/api/files/posts/${data.id}/${data.picUrl}`; 
+        feedItem.avatarUrl = "/avatar.jpg";
+        feedItem.location = data.location;
+        feedItem.date = data.created;
+        posts.push(feedItem);
+      }
+
+      setPosts(posts);
+    })();
+  }, []);
+
   return (
     <>
       {/* <div>User is: {params.user}</div> */}
       <div className="flex justify-center items-center m-2 sm:m-8">
-        <Card className="w-100">
+        <Card className="w-full">
           <CardHeader className="bg-muted/20 p-6">
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16">
                 <AvatarImage src="/placeholder-user.jpg" />
-                <AvatarFallback>JP</AvatarFallback>
+                <AvatarFallback>AF</AvatarFallback>
               </Avatar>
               <div className="grid gap-1">
-                <h2 className="text-2xl font-bold">Jared Palmer</h2>
+                <h2 className="text-2xl font-bold">{user.name}</h2>
               </div>
             </div>
             <div className="flex justify-evenly items-center text-muted-foreground w-100">
@@ -87,13 +88,10 @@ export default function page({ params }: { params: { user: string } }) {
             <div className="grid gap-2">
               <h3 className="text-lg font-semibold">About</h3>
               <p className="text-muted-foreground">
-                Jared is a passionate environmentalist who has dedicated his
-                time to planting trees and raising awareness about
-                sustainability. He believes that small actions can make a big
-                difference in protecting our planet.
+                {user.bio}
               </p>
             </div>
-            <Separator />
+            {/* <Separator />
             <div className="grid gap-2">
               <h3 className="text-lg font-semibold">Achievements</h3>
               <div className="grid gap-2 text-muted-foreground">
@@ -106,7 +104,7 @@ export default function page({ params }: { params: { user: string } }) {
                   <span>Eco-Warrior of the Year Award</span>
                 </div>
               </div>
-            </div>
+            </div> */}
           </CardContent>
           {/* <hr /> */}
           {/* <CardFooter>
@@ -116,7 +114,7 @@ export default function page({ params }: { params: { user: string } }) {
       </div>
       <div className="px-2">
         <div className="flex flex-col gap-3 justify-around py-3">
-          {FEED_ITEMS.map((item) => (
+          {posts.map((item) => (
             <FeedCard key={item.id} data={item} />
           ))}
         </div>
