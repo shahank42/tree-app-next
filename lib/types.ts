@@ -15,3 +15,11 @@ export interface UserType {
   bio: string;
   walletAddress: string;
 }
+
+export interface UserTreeItem {
+  id: string;
+  name: string;
+  type: string;
+  user_id: string;
+  created: string;
+}

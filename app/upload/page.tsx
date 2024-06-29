@@ -112,7 +112,7 @@ function Page() {
       formData.append("description", data.description);
       formData.append("location", `${latitude}, ${longitude}`); // Using the captured location
 
-      console.log(Array.from(formData));
+      // console.log(Array.from(formData));
 
       const createdRecordPosts = await pb.collection("posts").create(formData);
       const createdRecordTrees = await pb.collection("trees").create({
@@ -125,10 +125,13 @@ function Page() {
       const newFormData = new FormData();
       newFormData.append("picUrl", selectedFile);
       newFormData.append("tree_id", createdRecordTrees.id);
+      newFormData.append("user_id", user.id);
       newFormData.append("upvotes", "0");
       const createdRecordTreeImages = await pb
         .collection("tree_images")
         .create(newFormData);
+
+      // TODO: redirect to individual tree page
     }
   };
 
