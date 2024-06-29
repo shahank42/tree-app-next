@@ -10,7 +10,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,6 +25,15 @@ import Image from "next/image";
 import { pb } from "@/lib/pbClient";
 import Webcam from "react-webcam";
 import { RecordModel } from "pocketbase";
+import { useActiveAccount, useAutoConnect } from "thirdweb/react";
+import { client } from "@/lib/thirdWebClient";
+import { Wallet, createWallet, inAppWallet } from "thirdweb/wallets";
+import { sendAndConfirmTransaction } from "thirdweb";
+import {
+  safeMint,
+  verifyDaily,
+} from "@/thirdweb/43113/0xdcee2dd10dd46086cc1d2b0825a11ffc990e6eff";
+import { nftreeContract } from "@/lib/web3";
 
 const formSchema = z.object({
   nameId: z.string().nonempty("Please select a tree"),
@@ -41,6 +56,8 @@ const videoConstraints = {
   height: 360,
   facingMode: "user",
 };
+
+let wallet: Wallet;
 
 function UpdateForm({ userTrees }: { userTrees: RecordModel[] }) {
   const user = useUserStore((state) => state.user);
@@ -71,9 +88,37 @@ function UpdateForm({ userTrees }: { userTrees: RecordModel[] }) {
     setCaptureEnabled(true);
   };
 
+  const { data: autoConnected, isLoading } = useAutoConnect({
+    client: client,
+    onConnect: (w: Wallet) => {
+      wallet = w;
+    },
+    wallets: [
+      inAppWallet(),
+      createWallet("app.core"),
+      createWallet("io.metamask"),
+    ],
+  });
+
+  const activeAccount = useActiveAccount();
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log(data);
     if (selectedFile) {
+      if (!activeAccount) throw "Account not active";
+
+      const tokenId = (await pb.collection("trees").getOne(data.nameId))
+        .tokenId as number;
+
+      const reciept = await sendAndConfirmTransaction({
+        transaction: verifyDaily({
+          tokenId: BigInt(tokenId),
+          contract: nftreeContract,
+        }),
+        account: activeAccount,
+      });
+
+      console.log(reciept)
+
       const formData = new FormData();
       formData.append("picUrl", selectedFile);
       formData.append("tree_id", data.nameId);
@@ -112,7 +157,9 @@ function UpdateForm({ userTrees }: { userTrees: RecordModel[] }) {
                 {isCaptureEnabled ? (
                   <>
                     <div className="mb-2">
-                      <Button onClick={() => setCaptureEnabled(false)}>End</Button>
+                      <Button onClick={() => setCaptureEnabled(false)}>
+                        End
+                      </Button>
                     </div>
                     <div className="mb-2">
                       <Webcam

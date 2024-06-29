@@ -5,8 +5,10 @@ import { Trees } from "lucide-react";
 import { pb } from "@/lib/pbClient";
 import { UserTreeItem, UserType } from "@/lib/types";
 import UserTreeCard from "@/components/UserTreeCard";
-import { showBalance } from "@/lib/web3";
+import { nftreeContract, showBalance } from "@/lib/web3";
 import { Wallet } from "thirdweb/wallets";
+import { getOwnedTokenIds } from "thirdweb/extensions/erc721";
+
 
 export default async function page({ params }: { params: { user: string } }) {
   try {
@@ -21,7 +23,13 @@ export default async function page({ params }: { params: { user: string } }) {
       walletAddress: result.wallet_address,
     };
 
-    console.log(user.walletAddress)
+
+    // const tokenIds = await getOwnedTokenIds({
+    //   contract: nftreeContract,
+    //   owner: user.walletAddress,
+    // });
+
+    // console.log(tokenIds)
 
     const numTrees = await showBalance("nftree", user.walletAddress);
     const carbonCredits = await showBalance("carbonCredit", user.walletAddress);

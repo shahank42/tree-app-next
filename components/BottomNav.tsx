@@ -129,23 +129,23 @@ function BottomNav() {
                 <UploadIcon />
               </Button>
             </DialogTrigger>
-            <DialogContent className="flex flex-col justify-center items-center sm:max-w-[425px] w-[calc(80vw)] rounded-md">
+            <DialogContent className="flex justify-center items-center sm:max-w-[425px] w-[calc(80vw)] rounded-md">
               <Link
                 href="/upload"
-                className="size-[3.2rem] rounded-full w-1/2"
+                className="rounded-full w-1/2"
                 onClick={handleClose}
               >
                 <Button>
-                  Upload a Tree <UploadIcon className="ml-2" />
+                  Plant a new tree <br /> <UploadIcon className="ml-2" />
                 </Button>
               </Link>
               <Link
                 href="/update"
-                className="size-[3.2rem] rounded-full w-1/2"
+                className="rounded-full w-1/2"
                 onClick={handleClose}
               >
                 <Button>
-                  Update a Tree <UploadIcon className="ml-2" />
+                  Show us your Tree <br /> <UploadIcon className="ml-2" />
                 </Button>
               </Link>{" "}
             </DialogContent>

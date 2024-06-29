@@ -20,10 +20,7 @@ import { useState, useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Webcam from "react-webcam";
-import {
-  useActiveAccount,
-  useAutoConnect
-} from "thirdweb/react";
+import { useActiveAccount, useAutoConnect } from "thirdweb/react";
 import { safeMint } from "@/thirdweb/43113/0xdcee2dd10dd46086cc1d2b0825a11ffc990e6eff";
 import { nftreeContract } from "@/lib/web3";
 import { client } from "@/lib/thirdWebClient";
@@ -141,7 +138,11 @@ function Page() {
         account: activeAccount,
       });
 
-      console.log(reciept);
+      const id: string = (
+        await pb.collection("trees").getFullList({
+          sort: "-tokenId",
+        })
+      )[0].tokenId;
 
       // const createdRecordPosts = await pb.collection("posts").create(formData);
       const createdRecordTrees = await pb.collection("trees").create({
@@ -150,6 +151,7 @@ function Page() {
         type: data.type,
         name: data.name,
         tree_uuid: treeUUID,
+        tokenId: parseInt(id) + 1,
       });
 
       const newFormData = new FormData();
