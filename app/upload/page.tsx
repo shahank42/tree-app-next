@@ -17,11 +17,10 @@ import { useUserStore } from "@/lib/stores/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Webcam from "react-webcam";
-import { log } from "console";
 
 // Utility function to convert data URL to Blob
 const dataURLToBlob = (dataURL: string): Blob => {

@@ -1,25 +1,11 @@
-import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Trees } from "lucide-react";
-import { Award } from "lucide-react";
-import Image from "next/image";
-import FeedCard from "@/components/FeedCard";
 import { pb } from "@/lib/pbClient";
-import { FeedItem, UserTreeItem, UserType } from "@/lib/types";
-import { useUserStore } from "@/lib/stores/user";
+import { UserTreeItem, UserType } from "@/lib/types";
 import UserTreeCard from "@/components/UserTreeCard";
-import { RecordModel } from "pocketbase";
 import { showBalance } from "@/lib/web3";
-import DisplayCarbonBalance from "@/components/DisplayBalance";
 
 export default async function page({ params }: { params: { user: string } }) {
   try {
@@ -34,8 +20,10 @@ export default async function page({ params }: { params: { user: string } }) {
       walletAddress: result.wallet_address,
     };
 
+    console.log(user.walletAddress)
+
     const numTrees = await showBalance("nftree", user.walletAddress);
-    const carbonCredits = await showBalance("nftree", user.walletAddress);
+    const carbonCredits = await showBalance("carbonCredit", user.walletAddress);
 
     const retrievedData = await pb.collection("trees").getFullList({
       filter: `user_id="${user?.id}"`,
@@ -111,6 +99,6 @@ export default async function page({ params }: { params: { user: string } }) {
     );
   } catch (e) {
     // setUserPresent(false);
-    return <>lmao</>;
+    return <>{JSON.stringify(e)}</>;
   }
 }

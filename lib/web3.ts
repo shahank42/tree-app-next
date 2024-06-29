@@ -1,3 +1,4 @@
+import { owner } from 'TODO';
 import { avalancheFuji } from 'thirdweb/chains';
 import { createThirdwebClient, getContract } from "thirdweb";
 import { client } from "./thirdWebClient";
