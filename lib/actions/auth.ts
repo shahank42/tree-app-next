@@ -27,6 +27,14 @@ export async function login(payload: VerifyLoginPayloadParams) {
   }
 }
 
+export async function setWalletAddressCookie(address: string) {
+  cookies().set("wallet_address", address);
+}
+
+export async function getWalletAddressCookie() {
+  return cookies().get("wallet_address");
+}
+
 export async function isLoggedIn() {
   const jwt = cookies().get("jwt");
   if (!jwt?.value) {

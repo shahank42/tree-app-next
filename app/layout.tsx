@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import BottomNav from "@/components/BottomNav";
 import { ThirdwebProvider } from "thirdweb/react";
+import { useUserStore } from "@/lib/stores/user";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,6 +18,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // const user = useUserStore((state) => state.user);
+  // const updateUser = useUserStore((state) => state.updateUser)
+
   return (
     <html lang="en">
       <body

@@ -2,9 +2,16 @@
 
 import Onboarding from "@/components/Onboarding";
 import OnboardingForm from "@/components/OnboardingForm";
-import { generatePayload, isLoggedIn, login, logout } from "@/lib/actions/auth";
+import {
+  generatePayload,
+  isLoggedIn,
+  login,
+  logout,
+  setWalletAddressCookie,
+} from "@/lib/actions/auth";
 import { pb } from "@/lib/pbClient";
 import { client } from "@/lib/thirdWebClient";
+import { cookies } from "next/headers";
 import React, { useEffect, useState } from "react";
 import { ConnectButton } from "thirdweb/react";
 
@@ -41,6 +48,7 @@ function Login() {
                 isLoggedIn: async (address) => {
                   console.log("checking if logged in!", { address });
                   setWalletAddress(address);
+                  await setWalletAddressCookie(address);
                   return await isLoggedIn();
                 },
                 doLogin: async (params) => {

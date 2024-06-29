@@ -20,8 +20,10 @@ import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "./ui/button";
 import { ConnectButton } from "thirdweb/react";
 import { client } from "@/lib/thirdWebClient";
-import { isLoggedIn } from "@/lib/actions/auth";
+import { getWalletAddressCookie, isLoggedIn } from "@/lib/actions/auth";
 import { useUserStore } from "@/lib/stores/user";
+import { pb } from "@/lib/pbClient";
+import { useRouter } from "next/navigation";
 
 const NAV_ITEMS = [
   {
@@ -43,11 +45,37 @@ const NAV_ITEMS = [
 
 function BottomNav() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const router = useRouter();
 
   const user = useUserStore((state) => state.user);
+  const updateUser = useUserStore((state) => state.updateUser);
 
-  console.log("useris", user)
+  useEffect(() => {
+    (async () => {
+      const walletAddress = await getWalletAddressCookie();
 
+      try {
+        const result = await pb
+          .collection("users_table")
+          .getFirstListItem(`wallet_address="${walletAddress?.value}"`);
+
+        console.log("nav fetched", result);
+
+        const user = {
+          name: result.name,
+          bio: result.bio,
+          id: result.id,
+          walletAddress: result.wallet_address,
+        };
+
+        updateUser(user);
+
+        router.push(`/user/${result.name}`);
+      } catch (e) {}
+    })();
+  }, []);
+
+  console.log("useris", user);
 
   useEffect(() => {
     (async () => {
