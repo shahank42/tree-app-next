@@ -1,49 +1,40 @@
+"use client";
+
 import FeedCard from "@/components/FeedCard";
-
-
-const FEED_ITEMS = [
-  {
-    id: 0,
-    username: "shahank",
-    descripton: "i planted a tree and i feel like i saved the world",
-    picUrl: "/tree.jpg",
-    avatarUrl: "/avatar.jpg",
-    date: "09/11/2001",
-  },
-  {
-    id: 1,
-    username: "shahank2",
-    descripton: "i planted a tree and i feel like i saved the world",
-    picUrl: "/tree.jpg",
-    avatarUrl: "/avatar.jpg",
-    date: "09/11/2001",
-
-  },
-  {
-    id: 2,
-    username: "shahank2",
-    descripton: "i planted a tree and i feel like i saved the world",
-    picUrl: "/tree.jpg",
-    avatarUrl: "/avatar.jpg",
-    date: "09/11/2001",
-
-  },
-  {
-    id: 3,
-    username: "shahank2",
-    descripton: "i planted a tree and i feel like i saved the world",
-    picUrl: "/tree.jpg",
-    avatarUrl: "/avatar.jpg",
-    date: "09/11/2001",
-
-  },
-];
+import { pb } from "@/lib/pbClient";
+import { FeedItem } from "@/lib/types";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [posts, setPosts] = useState<FeedItem[]>([]);
+  // const posts = await pb.collection("posts").getFullList();
+
+  useEffect(() => {
+    (async () => {
+      const retrievedData = await pb.collection("posts").getFullList();
+
+      const posts: FeedItem[] = [];
+      for (const data of retrievedData) {
+        const feedItem: FeedItem = {} as FeedItem;
+        feedItem.id = data.id;
+        feedItem.username = data.username;
+        feedItem.description = data.description;
+        feedItem.user_id = data.user_id;
+        feedItem.picUrl = `${process.env.NEXT_PUBLIC_PB_URL}/api/files/posts/${data.id}/${data.picUrl}`; // TODO
+        feedItem.avatarUrl = "/avatar.jpg";
+        feedItem.location = data.location;
+        feedItem.date = data.created;
+        posts.push(feedItem);
+      }
+
+      setPosts(posts);
+    })();
+  }, []);
+
   return (
     <div className="px-2">
       <div className="flex flex-col gap-3 justify-around py-3">
-        {FEED_ITEMS.map((item) => (
+        {posts.map((item) => (
           <FeedCard key={item.id} data={item} />
         ))}
       </div>

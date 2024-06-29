@@ -1,10 +1,12 @@
 export interface FeedItem {
-  id: number;
+  id: string;
+  user_id: string;
   username: string;
-  descripton: string;
+  description: string;
   picUrl: string;
   avatarUrl: string;
   date: string;
+  location: string;
 }
 
 export interface UserType {

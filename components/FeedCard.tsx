@@ -11,7 +11,7 @@ function FeedCard({ data }: { data: FeedItem }) {
         <div className="relative w-full h-32">
           <Image
             src={data.picUrl}
-            alt={data.descripton}
+            alt={data.description}
             fill
             objectFit="cover"
             className="rounded-lg"
@@ -30,10 +30,10 @@ function FeedCard({ data }: { data: FeedItem }) {
               <CardTitle className="pt-2">{data.username}</CardTitle>
             </div>
             <CardDescription className="pt-2.5 pl-10">
-              {data.date}
+              {(new Date(data.date)).toDateString()}
             </CardDescription>
           </div>
-          <CardDescription>{data.descripton}</CardDescription>
+          <CardDescription>{data.description}</CardDescription>
         </div>
       </CardHeader>
     </Card>

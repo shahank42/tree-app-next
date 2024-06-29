@@ -12,6 +12,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { pb } from "@/lib/pbClient";
+import { useUserStore } from "@/lib/stores/user";
+import { FeedItem } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -33,9 +36,23 @@ function Page() {
   });
 
   const [preview, setPreview] = useState("/tree.jpg");
+  const [selectedFile, setSelectedFile] = useState<Blob>();
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+  const user = useUserStore((state) => state.user);
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("picUrl", selectedFile);
+      formData.append("user_id", user.id);
+      formData.append("username", user.name);
+      formData.append("description", data.description);
+      formData.append("location", "kalani");
+
+      console.log(Array.from(formData));
+
+      const createdRecord = await pb.collection("posts").create(formData);
+    }
   };
 
   const fileRef = form.register("file");
@@ -74,6 +91,7 @@ function Page() {
                               const previewUrl = URL.createObjectURL(
                                 e.target.files[0]
                               );
+                              setSelectedFile(e.target.files[0]);
                               setPreview(previewUrl);
                             }
                           }}
