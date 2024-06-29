@@ -56,8 +56,8 @@ function BottomNav() {
   });
 
   return (
-    <div className="fixed bottom-0 w-full">
-      <nav className=" w-full bg-card border border-input py-3">
+    <div className="fixed sm:sticky  bottom-0 w-full">
+      <nav className=" w-full bg-card border border-input py-3 sm:rounded-md">
         <div className="flex w-full justify-around">
           <Link
             href="/"
