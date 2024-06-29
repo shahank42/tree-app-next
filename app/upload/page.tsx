@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -17,6 +17,7 @@ import { useUserStore } from "@/lib/stores/user";
 import { FeedItem } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -28,6 +29,8 @@ const formSchema = z.object({
   //   return value as FileList;
   // }),
   location: z.string().default("kalani"),
+  type: z.string(),
+  name: z.string(),
 });
 
 function Page() {
@@ -51,7 +54,21 @@ function Page() {
 
       console.log(Array.from(formData));
 
-      const createdRecord = await pb.collection("posts").create(formData);
+      const createdRecordPosts = await pb.collection("posts").create(formData);
+      const createdRecordTrees = await pb.collection("trees").create({
+        location: "kalani",
+        user_id: user.id,
+        type: data.type,
+        name: data.name,
+      });
+
+      const newFormData = new FormData();
+      newFormData.append("picUrl", selectedFile);
+      newFormData.append("tree_id", createdRecordTrees.id);
+      newFormData.append("upvotes", "0");
+      const createdRecordTreeImages = await pb
+        .collection("tree_images")
+        .create(newFormData);
     }
   };
 
@@ -105,6 +122,41 @@ function Page() {
                   );
                 }}
               />
+
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Name you tree (important!)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Type</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      What kind of tree did you plant?
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="description"
@@ -127,7 +179,16 @@ function Page() {
               />
             </div>
 
-            <Button type="submit">Submit</Button>
+            <div className="flex flex-col w-full">
+              <Button type="submit">Submit new tree</Button>
+              <span className="w-full flex justify-center">OR</span>
+              <Link
+                href="/update"
+                className={buttonVariants({ variant: "outline" })}
+              >
+                Update your existing tree
+              </Link>
+            </div>
           </form>
         </Form>
       </div>
