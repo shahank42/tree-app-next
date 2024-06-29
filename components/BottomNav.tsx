@@ -70,12 +70,12 @@ function BottomNav() {
 
         updateUser(user);
 
-        router.push(`/user/${result.name}`);
+        // router.push(`/user/${result.name}`);
       } catch (e) {}
     })();
   }, []);
 
-  console.log("useris", user);
+  // console.log("useris", user);
 
   useEffect(() => {
     (async () => {
