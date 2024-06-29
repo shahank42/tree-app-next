@@ -16,6 +16,14 @@ import {
   Upload,
   UploadIcon,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "./ui/button";
 import { ConnectButton } from "thirdweb/react";
@@ -50,6 +58,14 @@ function BottomNav() {
   const user = useUserStore((state) => state.user);
   const updateUser = useUserStore((state) => state.updateUser);
 
+  // State to control dialog visibility
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Function to handle button click and close the dialog
+  const handleClose = () => {
+    setIsDialogOpen(false);
+  };
+
   useEffect(() => {
     (async () => {
       const walletAddress = await getWalletAddressCookie();
@@ -70,12 +86,12 @@ function BottomNav() {
 
         updateUser(user);
 
-        router.push(`/user/${result.name}`);
+        // router.push(`/user/${result.name}`);
       } catch (e) {}
     })();
   }, []);
 
-  console.log("useris", user);
+  // console.log("useris", user);
 
   useEffect(() => {
     (async () => {
@@ -99,17 +115,41 @@ function BottomNav() {
             <HomeIcon />
           </Link>
 
-          <Link
-            href="/upload"
-            className={cn(
-              buttonVariants({
-                variant: "default",
-              }),
-              "flex gap-2 size-[3.2rem] rounded-full"
-            )}
-          >
-            <UploadIcon />
-          </Link>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                onClick={() => setIsDialogOpen(true)}
+                className={cn(
+                  buttonVariants({
+                    variant: "default",
+                  }),
+                  "flex gap-2 size-[3.2rem] rounded-full"
+                )}
+              >
+                <UploadIcon />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="flex flex-col justify-center items-center sm:max-w-[425px] w-[calc(80vw)] rounded-md">
+              <Link
+                href="/upload"
+                className="size-[3.2rem] rounded-full w-1/2"
+                onClick={handleClose}
+              >
+                <Button>
+                  Upload a Tree <UploadIcon className="ml-2" />
+                </Button>
+              </Link>
+              <Link
+                href="/update"
+                className="size-[3.2rem] rounded-full w-1/2"
+                onClick={handleClose}
+              >
+                <Button>
+                  Update a Tree <UploadIcon className="ml-2" />
+                </Button>
+              </Link>{" "}
+            </DialogContent>
+          </Dialog>
 
           {loggedIn ? (
             <Link

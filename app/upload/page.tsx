@@ -14,32 +14,92 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { pb } from "@/lib/pbClient";
 import { useUserStore } from "@/lib/stores/user";
-import { FeedItem } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import Webcam from "react-webcam";
+import { log } from "console";
 
+// Utility function to convert data URL to Blob
+const dataURLToBlob = (dataURL: string): Blob => {
+  const arr = dataURL.split(",");
+  const mime = arr[0].match(/:(.*?);/)?.[1] || "";
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
+};
+
+// Define the form schema with location fields
 const formSchema = z.object({
   description: z.string().min(1).max(100),
-  file: z.instanceof(FileList),
-  // file: z.unknown().transform((value) => {
-  //   return value as FileList;
-  // }),
-  location: z.string().default("kalani"),
   type: z.string(),
   name: z.string(),
+  latitude: z.string().optional(),
+  longitude: z.string().optional(),
 });
+
+const videoConstraints = {
+  width: 720,
+  height: 360,
+  facingMode: "user", // Initial facing mode is the front camera
+};
 
 function Page() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
-  const [preview, setPreview] = useState("/tree.jpg");
+  const [isCaptureEnabled, setCaptureEnabled] = useState<boolean>(false);
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
+  const webcamRef = useRef<Webcam>(null);
+  const [url, setUrl] = useState<string>("/tree.jpg");
   const [selectedFile, setSelectedFile] = useState<Blob>();
+  const [latitude, setLatitude] = useState<string>("");
+  const [longitude, setLongitude] = useState<string>("");
+
+  console.log(`lat:${latitude}, long: ${longitude}`);
+
+  // Function to capture image
+  const capture = useCallback(() => {
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (imageSrc) {
+      setUrl(imageSrc);
+      const imageBlob = dataURLToBlob(imageSrc);
+      setSelectedFile(imageBlob);
+    }
+  }, [webcamRef]);
+
+  // Function to toggle camera facing mode
+  const toggleCamera = () => {
+    setFacingMode((prevMode) => (prevMode === "user" ? "environment" : "user"));
+  };
+
+  // Function to get the user's current location
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        console.log("pos:", position);
+
+        setLatitude(position.coords.latitude.toString());
+        setLongitude(position.coords.longitude.toString());
+      });
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  };
+
+  // Function to start capturing and get the location
+  const startCaptureWithLocation = () => {
+    setCaptureEnabled(true);
+    getLocation();
+  };
 
   const user = useUserStore((state) => state.user);
 
@@ -50,13 +110,13 @@ function Page() {
       formData.append("user_id", user.id);
       formData.append("username", user.name);
       formData.append("description", data.description);
-      formData.append("location", "kalani");
+      formData.append("location", `${latitude}, ${longitude}`); // Using the captured location
 
-      console.log(Array.from(formData));
+      // console.log(Array.from(formData));
 
       const createdRecordPosts = await pb.collection("posts").create(formData);
       const createdRecordTrees = await pb.collection("trees").create({
-        location: "kalani",
+        location: `${latitude}, ${longitude}`, // Using the captured location
         user_id: user.id,
         type: data.type,
         name: data.name,
@@ -65,64 +125,65 @@ function Page() {
       const newFormData = new FormData();
       newFormData.append("picUrl", selectedFile);
       newFormData.append("tree_id", createdRecordTrees.id);
+      newFormData.append("user_id", user.id);
       newFormData.append("upvotes", "0");
       const createdRecordTreeImages = await pb
         .collection("tree_images")
         .create(newFormData);
+
+      // TODO: redirect to individual tree page
     }
   };
-
-  const fileRef = form.register("file");
 
   return (
     <div className="w-full flex justify-center items-center">
       <div className="flex flex-col items-center w-full gap-2 px-4 pt-10">
+        {/* Image preview */}
         <div className="relative size-64">
           <Image
-            src={preview}
-            alt="its a pic"
+            src={url}
+            alt="Preview of the captured image"
             fill
             objectFit="cover"
             className="rounded-lg"
           />
         </div>
+        {/* Form */}
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="w-full p-10 flex flex-col gap-10"
           >
             <div className="flex flex-col gap-5 w-full">
-              <FormField
-                control={form.control}
-                name="file"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Upload Picture</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="file"
-                          {...fileRef}
-                          onChange={(e) => {
-                            if (e.target.files) {
-                              const previewUrl = URL.createObjectURL(
-                                e.target.files[0]
-                              );
-                              setSelectedFile(e.target.files[0]);
-                              setPreview(previewUrl);
-                            }
-                          }}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Share the picture of your awesome new tree!
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+              {/* Capture Picture Section */}
+              <div>
+                <FormLabel>Capture Picture</FormLabel>
+                {isCaptureEnabled ? (
+                  <>
+                    <div className="mb-2">
+                      <Button onClick={() => setCaptureEnabled(false)}>
+                        End
+                      </Button>
+                    </div>
+                    <div className="mb-2">
+                      <Webcam
+                        audio={false}
+                        ref={webcamRef}
+                        screenshotFormat="image/jpeg"
+                        videoConstraints={{ ...videoConstraints, facingMode }}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={capture}>Capture</Button>
+                      <Button onClick={toggleCamera}>Switch Camera</Button>
+                    </div>
+                  </>
+                ) : (
+                  <Button onClick={startCaptureWithLocation}>Start</Button>
+                )}
+              </div>
 
+              {/* Form Fields */}
               <FormField
                 control={form.control}
                 name="name"
@@ -133,7 +194,7 @@ function Page() {
                       <Input {...field} />
                     </FormControl>
                     <FormDescription>
-                      Name you tree (important!)
+                      Name your tree (important!)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
