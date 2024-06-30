@@ -10,6 +10,7 @@ export interface FeedItem {
   date: string;
   location: string;
   created: string;
+  tree_id: string;
 }
 
 export interface UserType {

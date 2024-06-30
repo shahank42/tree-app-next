@@ -20,18 +20,20 @@ export default async function Home() {
     feedItem.upvotes = data.upvotes;
     feedItem.uuid = data.uuid;
     feedItem.avatarUrl = "/avatar.jpg";
+    feedItem.tree_id = data.tree_id;
     // feedItem.location = data.location;
     feedItem.date = data.created;
     posts.push(feedItem);
   }
 
-  console.log(posts);
+  const upvotes = await pb.collection("upvotes").getFullList();
 
+  
   return (
     <div className="px-2">
       <div className="flex flex-col gap-3 justify-around py-3">
         {posts.map((item) => (
-          <FeedCard key={item.id} data={item} />
+          <FeedCard key={item.id} data={item} upvotes={upvotes} />
         ))}
       </div>
     </div>
