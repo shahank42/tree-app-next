@@ -138,11 +138,11 @@ function Page() {
         account: activeAccount,
       });
 
-      const id: string = (
-        await pb.collection("trees").getFullList({
-          sort: "-tokenId",
-        })
-      )[0].tokenId;
+      const trees = await pb.collection("trees").getFullList({
+        sort: "-tokenId",
+      });
+
+      const id: string = trees.length === 0 ? "-1" : trees[0].tokenId;
 
       // const createdRecordPosts = await pb.collection("posts").create(formData);
       const createdRecordTrees = await pb.collection("trees").create({
