@@ -18,6 +18,9 @@ export default async function Page() {
     filter: `user_id="${user.id}"`,
   });
 
+  console.log(await getWalletAddressCookie())
+
+
   return (
     <div className="w-full flex justify-center items-center">
       <div className="flex flex-col items-center w-full gap-2 px-4 pt-10">

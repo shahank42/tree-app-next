@@ -1,6 +1,7 @@
 import FeedCard from "@/components/FeedCard";
 import { pb } from "@/lib/pbClient";
 import { FeedItem } from "@/lib/types";
+import { getWalletAddressCookie } from "@/lib/actions/auth";
 
 export default async function Home() {
   const retrievedTreeImageData = await pb
@@ -27,6 +28,8 @@ export default async function Home() {
   }
 
   const upvotes = await pb.collection("upvotes").getFullList();
+
+  console.log(await getWalletAddressCookie())
 
   
   return (

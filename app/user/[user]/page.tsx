@@ -8,6 +8,7 @@ import UserTreeCard from "@/components/UserTreeCard";
 import { nftreeContract, showBalance } from "@/lib/web3";
 import { Wallet } from "thirdweb/wallets";
 import { getOwnedTokenIds } from "thirdweb/extensions/erc721";
+import { getWalletAddressCookie } from "@/lib/actions/auth";
 
 
 export default async function page({ params }: { params: { user: string } }) {
@@ -22,6 +23,8 @@ export default async function page({ params }: { params: { user: string } }) {
       id: result.id,
       walletAddress: result.wallet_address,
     };
+
+    console.log(await getWalletAddressCookie())
 
 
     // const tokenIds = await getOwnedTokenIds({

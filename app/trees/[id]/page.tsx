@@ -24,6 +24,8 @@ export default async function page({ params }: { params: { id: string } }) {
       created: result.created,
     };
 
+    console.log(await getWalletAddressCookie());
+
     const createdDate: Date = new Date(tree.created);
     const currentDate: Date = new Date();
     const timeDifference: number =
