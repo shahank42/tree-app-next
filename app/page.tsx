@@ -17,6 +17,8 @@ export default async function Home() {
     // feedItem.description = data.description;
     feedItem.user_id = data.user_id;
     feedItem.picUrl = `${process.env.NEXT_PUBLIC_PB_URL}/api/files/tree_images/${data.id}/${data.picUrl}`;
+    feedItem.upvotes = data.upvotes;
+    feedItem.uuid = data.uuid;
     feedItem.avatarUrl = "/avatar.jpg";
     // feedItem.location = data.location;
     feedItem.date = data.created;
