@@ -6,6 +6,7 @@ import { FeedItem } from "@/lib/types";
 import Image from "next/image";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { useState } from "react";
+import { Button, buttonVariants } from "./ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,11 +15,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button"
 import { Info } from 'lucide-react';
 import { ChevronUp } from 'lucide-react';
-
-
+import { cn } from "@/lib/utils";
+import { pb } from "@/lib/pbClient";
 
 function FeedCard({ data }: { data: FeedItem }) {
 
@@ -26,10 +26,25 @@ function FeedCard({ data }: { data: FeedItem }) {
   const handleClick = () => {
     setShowTreeInfo(!showTreeInfo);
   }
+
+  // async function upvote(id: string, upvotes: number){
+  //   try{
+  //     const newData = {
+  //       "tree_id": id,
+  //       "upvotes": upvotes + 1,
+  //     };
+  
+  //     const record = await pb.collection('tree_images').update(id, newData);
+  //     console.log(record);
+  //   }catch (error) {
+  //       console.error(`Unexpected error: ${error}`);
+  // }  };
+
+
   return (
      <div>  
     <Card onClick={handleClick}>
-      <CardHeader className="flex flex-col gap-5">
+      <CardHeader className="flex flex-col gap-5 pb-2">
         <div className="relative w-full h-32">
           <Image
             src={data.picUrl}
@@ -95,6 +110,15 @@ function FeedCard({ data }: { data: FeedItem }) {
           <CardDescription>{data.description}</CardDescription>
         </div>
       </CardHeader>
+      <Button
+                // onClick={() => upvote(data.id, data.upvotes)}
+                className={cn(
+                  buttonVariants({
+                    variant: "outline",
+                  }),
+                  "flex gap-2 rounded-md text-gray-800"
+                )}
+              ><ChevronUp/>Upvote({data.upvotes})</Button>
     </Card>
     {/* {showTreeInfo && <TreeInfo data={data} />} */}
     </div>   
