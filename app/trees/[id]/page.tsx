@@ -1,27 +1,13 @@
-import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import { Trees } from "lucide-react";
-import { Award } from "lucide-react";
-import Image from "next/image";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import FeedCard from "@/components/FeedCard";
 import { pb } from "@/lib/pbClient";
-import { FeedItem, UserTreeItem, UserType } from "@/lib/types";
-import { useUserStore } from "@/lib/stores/user";
-import UserTreeCard from "@/components/UserTreeCard";
-import { RecordModel } from "pocketbase";
+import { FeedItem, UserTreeItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { ChevronUp } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { TransactionButton } from "thirdweb/react";
+import { claimCredit } from "@/thirdweb/43113/0xdcee2dd10dd46086cc1d2b0825a11ffc990e6eff";
+import { useUserStore } from "@/lib/stores/user";
+import { carbonCreditContract, nftreeContract } from "@/lib/web3";
+import { getWalletAddressCookie } from "@/lib/actions/auth";
 
 export default async function page({ params }: { params: { id: string } }) {
   try {
@@ -64,6 +50,7 @@ export default async function page({ params }: { params: { id: string } }) {
 
     const userTreeImages = await pb.collection("tree_images").getFullList();
     const upvotes = await pb.collection("upvotes").getFullList();
+    const walletAddress = await getWalletAddressCookie();
 
     return (
       <>
@@ -71,11 +58,24 @@ export default async function page({ params }: { params: { id: string } }) {
           <Card className="w-full">
             <CardHeader className="bg-muted/20 p-6">
               <div className="flex items-center gap-4">
-                <div className="grid gap-1">
+                <div className="flex w-full justify-between">
                   <h2 className="text-2xl font-bold">{tree?.name}</h2>
+                  {/* <Button onClick={}>Claim CC!</Button> */}
+                  <TransactionButton
+                    transaction={() => {
+                      return claimCredit({
+                        to: walletAddress?.value || "",
+                        tokenId: result.tokenId,
+                        contract: nftreeContract,
+                      });
+                    }}
+                  >
+                    Claim CC!
+                  </TransactionButton>
                 </div>
               </div>
             </CardHeader>
+
             <CardContent className="p-6 pt-0 grid gap-4">
               <div className="grid gap-2">
                 <h3 className="text-lg font-semibold">About</h3>
